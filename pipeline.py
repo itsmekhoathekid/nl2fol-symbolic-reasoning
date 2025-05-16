@@ -1,5 +1,5 @@
 
-from utils import load_pipeline, load_yml, extract_predicate_prompt, MAKE_CONCLUSION_FROM_OPTION_QUESTION
+from utils import load_pipeline, load_yml, extract_predicate_prompt, MAKE_CONCLUSION_FROM_OPTION_QUESTION, start_corenlp_server
 from modules import make_conclusion
 from modules import predicate_nl_extractor, Extract_Hypothesis, nl_to_fol
 
@@ -41,6 +41,9 @@ def check_multiple_choice(question: str):
     return False
 
 if __name__ == "__main__":
+    # khoi dong server corenlp
+    start_corenlp_server(8000)
+
     args = parse_args()
     config = load_yml(args.config)
 
@@ -49,7 +52,7 @@ if __name__ == "__main__":
     pipeline = load_pipeline(config["model_path"])
     model_embedding = SentenceTransformer(config['model_embedding']).cuda(args.device)
 
-    predicate_extractor = predicate_nl_extractor(pipeline, model_embedding, threshold=0.8)
+    predicate_extractor = predicate_nl_extractor(pipeline, model_embedding, threshold=0.5)
 
     nl_to_fol_converter = nl_to_fol(pipeline)
 
@@ -69,10 +72,10 @@ if __name__ == "__main__":
                     question=question,
                     config=config
                 )
-                new_questions.append(new_question)
+                new_questions.append(new_question + '.')
             else: # Cho các câu hỏi loại khác
                 new_question = extract_hypothesis_another.generate_hypothesis(question)
-                new_questions.append(new_question)
+                new_questions.append(new_question + '.')
         record['questions'] = new_questions
 
 
@@ -90,29 +93,39 @@ if __name__ == "__main__":
             print(f"Premise: {premise_nl}")
             print(f"Predicates: {premise_pred_dic[premise_nl]}")
 
-        
+
 
         fol_pred_dic = nl_to_fol_converter.convert(preds)
         for pred in preds:
             print(f"Predicate: {pred}")
-            fol_pred_dic[pred] = fol_pred_dic[pred] + " ::: " + pred
+            # fol_pred_dic[pred] = fol_pred_dic[pred] + " ::: " + pred
             print(f"FOL Predicate: {fol_pred_dic[pred]}")
-    
+
+
+         
         # Convert premise to FOL
-        print(f"FOL Formula: ")
-        fol_formula_dic = {}
-        for premise_nl in list(premise_pred_dic.keys()):
-            premise_nl_pred = premise_pred_dic[premise_nl]
-            fol_formula = nl_to_fol_converter.convert_premise_to_fol(premise_nl, premise_nl_pred, fol_pred_dic, subject_pred_dic)
-            fol_formula_dic[premise_nl] = fol_formula
-            print(fol_formula)
+        # print(f"FOL Formula: ")
+        # fol_formula_dic = {}
+        # for premise_nl in list(premise_pred_dic.keys()):
+        #     premise_nl_pred = premise_pred_dic[premise_nl]
+        #     fol_formula = nl_to_fol_converter.convert_premise_to_fol(premise_nl, premise_nl_pred, fol_pred_dic, subject_pred_dic)
+        #     fol_formula_dic[premise_nl] = fol_formula
+        #     print(fol_formula)
+        
+        premise_nl_list = list(premise_pred_dic.keys())
+        fol_formula = nl_to_fol_converter.convert_premise_to_fol(premise_nl_list, premise_pred_dic, fol_pred_dic, subject_pred_dic)
+
+        for fol in fol_formula:
+            print(fol)
+            # fol_formula_dic[premise_nl] = fol_formula
+            # print(fol_formula)
 
         # convert question to FOL
 
         record['fol_pred_dic'] = fol_pred_dic
         record['premise_pred_dic'] = premise_pred_dic
         record['subject_pred_dic'] = subject_pred_dic
-        record['fol_formula'] = fol_formula_dic
+        record['fol_formula'] = fol_formula
         # Save the record to a file
 
         output_file = '/data/npl/ViInfographicCaps/Contest/final_contest/another_way/save/save_data.json'
@@ -124,5 +137,5 @@ if __name__ == "__main__":
 
 
 
-        break
+        raise
     

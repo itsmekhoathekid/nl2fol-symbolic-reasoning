@@ -3,93 +3,180 @@ from .base import chatAgent
 class nl_to_fol(chatAgent):
     def __init__(self, pipeline):
         super().__init__(pipeline)
-    
+
 
     def convert(self, list_predicates):
         dic = {}
-        for predicate in list_predicates:
-            convert_prompt = self.get_predicate_fol_prompt(predicate)
-            response = self.get_response(convert_prompt)
-            dic[predicate] = response
+        
+        prompt = self.get_predicate_fol_prompt(list_predicates)
+        response = self.get_response(prompt).split('\n')
+        for idx, pred in enumerate(list_predicates):
+            dic[pred] = pred + ':::' + response[idx].split(':::')[1].strip()
 
+        
+        # for idx, pred in enumerate(list_predicates):
+        #     dic[pred] = pred + ':::' + response[idx].split(':::')[1].strip()
         return dic
 
-    def get_predicate_fol_prompt(self, predicate):
-        prompt = f"""You are a symbolic logic assistant.
+    def get_predicate_fol_prompt(self, predicate_nl):
+        PROMPT_LP = """<s>[INST]
+            ### Task: For each given **natural language predicate**, generate a corresponding **First-Order Logic (FOL) predicate** that faithfully captures its logical meaning.
 
-        Your task is to convert the following natural language predicate into its equivalent First-Order Logic (FOL) expression.
+            You are given:
+            - A **premise** that provides the contextual background or knowledge base from which the logical predicates are derived.
+            - Each sentence describes a logical relationship or property involving one or more entities.
+            - Each definition is a **complete English sentence** and clearly specifies the **roles of all arguments** (e.g., who performs an action, who receives it).
 
-        Strict instructions:
-        - Return only **one line**.
-        - Format exactly as: [natural language predicate] ::: [FOL expression]
-        - Do NOT add any explanation, prefix (like "Solution:"), or newline.
-        - Do NOT include any additional words.
+            #### Your Goal:
+            For every natural language predicate, produce a well-formed **FOL predicate expression** that:
+            - Accurately reflects the **logical meaning** conveyed by the sentence.
+            - Identifies the **correct number of arguments** (e.g., x, y, z) based on the entities involved.
+            - Creates a **clear and self-explanatory predicate name** (in English) that summarizes the core relationship or property described.
+            - Assigns each argument to its correct role (e.g., subject, object, action recipient).
+            - Uses **logical arguments (e.g., x, y, z)** to represent the entities involved.
+            - Reflects the **correct argument structure** (e.g., number of arguments, their logical roles).
+            - Uses logical notation: `PredicateName(x)`, `PredicateName(x, y)`, etc.
 
-        Guidelines:
-        1. Use variable `x` as the subject.
-        2. Use variable `y` only if the predicate involves two entities.
-        3. Use concise snake_case for predicate names.
+            ### Instructions:
+            1. **Analyze each natural language predicate carefully** to determine:
+                - The number of **entities** involved (i.e., how many arguments the predicate should take).
+                - The **core relationship or property** being described (used to form the predicate name).
+                - The **roles** of the arguments (e.g., agent, theme, location, object).
+                - If the predicate involves a **fixed object like a degree, title, award, job, etc.**, represent it as a **constant**, not part of the predicate name.
 
-        Examples:
-        is eligible for graduation ::: eligible(x)  
-        is the advisor of ::: advisor_of(x, y)  
-        receives a scholarship from ::: receives_scholarship_from(x, y)  
-        is enrolled in course ::: enrolled_in(x, y)
+            2. **Rules for constructing the FOL predicate**:
+                - The **predicate name** must summarize the core action/relation/property using meaningful English terms.
+                - The number of arguments in the predicate must match the number of entities involved.
+                - Maintain the **semantic roles** of the arguments
+                - Avoid copying the sentence structure directly — instead, generate a compact and expressive predicate name.
+                - Use consistent naming style: either `CamelCase` or `snake_case`.
+                - **Do NOT merely paraphrase or copy** the sentence — you must **analyze** and convert it into a **logical representation**.
 
-        Now convert the following:
+            3. **Output Format**:
+                - Each output must be exactly **one line per definition**.
+                - Each line must follow this format:
+                    Natural Language Predicate ::: FOL-Predicate
+                - Use **exactly three colons** (` ::: `) as the separator.
+                - Example:
+                    + is a Teacher ::: Teacher(x)
+                    + do test on y subject ::: DoTestSubject(x, y)
 
-        ## Predicate:
-        {predicate.strip()}
-        ## FOL Expression:
+            4. **Final Requirements**:
+                - You must define **every single natural language predicate** provided in the list.
+                - Each FOL predicate must be **logically sound, syntactically correct, and match the right number of arguments and roles**.
+                - **Do not skip any natural language predicates**.
+                - No extra commentary or explanation — only the list of converted predicates.
+                - The number of output lines must **exactly match** the number of input definitions.
 
-        """
-        return prompt
+            ### Input:
+            - List of Natural Language Predicate: {predicate_nl}
+            [/INST]
+            Output: </s>"""
+        return PROMPT_LP.format(predicate_nl=predicate_nl)
 
     def construct_logic_program(self, lps):
         logic_program = [lp for lp in lps]
         return logic_program
 
     def premise_to_fol_prompt(self, logic_program, nl_premise, subject):
-        return f"""
-        ### Task: Convert the given *natural language premise* into a complete *First-Order Logic (FOL) expression* using only the provided predicate definitions.
+        prompt = f"""
+                [INST]
+        You are a formal-logic expert.
+        Your task: convert each natural-language statement (Premise-NL)
+        into one first-order-logic formula (Premise-FOL) in *logic-program style*.
 
-        You are given:
-        - A *natural language premise sentence* that either states a general rule (e.g., about "a student") or a specific fact (e.g., about "John").
-        - A *list of logic program predicates*, where each predicate is paired with a natural language definition.
-        - A *subject* variable which tells you who or what the premise is about.
+        ╭─ OUTPUT RULES (mandatory) ─────────────────────────────────────────╮
+        │ • Return **one line per premise**, nothing else.                  │
+        │ • Line = pure FOL: no bullet numbers, no “:::”, no code-fences.   │
+        │ • Keep antecedent ⇒ consequent order exactly as in NL.            │
+        │ • Allowed symbols:  ∀  ∃ / Exists  →  ∧  ∨  ¬                    │
+        ╰────────────────────────────────────────────────────────────────────╯
 
-        ### Your Goal:
-        Write exactly **one complete FOL expression** that represents the meaning of the input premise using the correct predicate(s) and argument(s).
+        GENERAL CONVENTIONS  
+        1. **Predicates** (section ❶) are declared as  
+            <Predicate>(<vars>) ::: <NL description>  
+        → *Never* insert constants there; always use a variable (x, y…).  
 
-        ### Rules:
-        1. Only use predicate names from the Logic Program list. **Do not invent new predicates.**
-        2. Use the predicate name exactly as written in the logic program.
-        3. Replace arguments as follows:
-        - Use variable `x` if the premise is a general rule about an unspecified subject.
-        - Use the given *subject* (e.g., John) if the premise is a specific fact.
-        4. If multiple predicates are involved, combine them using logical connectives such as `∧`, `∨`, `→`.
-        5. Your output must be a **single valid FOL expression** on one line.
+        2. **Arity guide** — when to choose 1-place vs 2-place  
+        • `P(x)`  for an intrinsic property or an action toward a fixed object.  
+        • `R(x,y)` for relations where y can vary / be queried later.  
+        • If unsure, prefer 2-place; you can always constrain later.  
 
-        ### Input:
-        - Natural Language Premise: {nl_premise}
-        - Subject: {subject}
-        - Logic Program: {logic_program}
+        3. **Subject handling**  
+        • *Class name* (Student, FacultyMember…): add that predicate in the
+            antecedent → `FacultyMember(x) → …`.  
+        • *Generic word* (person, someone, individual…): omit any `Person(x)`
+            unless NL states it.
 
-        ### Output:
-        """
+        4. **Named-individual rule**  
+        • If NL refers to a **specific proper name** (e.g. “Professor John”),
+            treat it as a **constant**  `John`.  
+        • Do **not** quantify over a constant; simply use it in the formula:  
+            `CompletedTraining(John) → CanTeachUndergrad(John)`  
 
-    def convert_premise_to_fol(self, premise_nl, premise_nl_pred, dic_predicates, premise_nl_subject):
-        # Construct the prompt
-        # premise nl pred = [pred 1, pred2, ...]
+        5. Named-individual fact  
+        • If a clause simply asserts **one property** of a specific, named
+            individual (John, Course101…), output **exactly one
+            predicate(constant)**—no quantifier, no arrow, no condition.  
+            NL: “Professor John holds a PhD.”  
+            FOL: HoldsPhD(John)
+
+        WORKFLOW FOR EACH SENTENCE  
+        S1  Detect quantifier pattern: universal, existential, none (named individual).  
+        S2  Map NL phrases to declared predicates; apply arity & subject rules.  
+        S3  Build the formula, adding ∀x / ∃x only when the sentence is about
+            unspecified individuals.  
+        S4  Output the single-line formula.
+
+        [/INST]
+        [INPUT]
+        "premises_nl": {nl_premise}
+        "subject": {subject}
+        "logic_program": {logic_program}
+        [/INPUT]
+        [OUTPUT]
+
+            """
+        return prompt
+
+    # def convert_premise_to_fol(self, premise_nl, premise_nl_pred, dic_predicates, premise_nl_subject):
+    #     # Construct the prompt
+    #     # premise nl pred = [pred 1, pred2, ...]
 
         
 
-        logic_program = [ dic_predicates[predicate] for predicate in premise_nl_pred ]
-        subject = premise_nl_subject[premise_nl]
-        logic_program = self.construct_logic_program(logic_program)
+    #     logic_program = [ dic_predicates[predicate] for predicate in premise_nl_pred ]
+    #     subject = premise_nl_subject[premise_nl]
+    #     logic_program = self.construct_logic_program(logic_program)
 
-        prompt = self.premise_to_fol_prompt(logic_program, premise_nl, subject)
-        # Get the response
-        response = self.get_response(prompt)
+    #     prompt = self.premise_to_fol_prompt(logic_program, premise_nl, subject)
+    #     # Get the response
+    #     response = self.get_response(prompt)
+    #     return response
+
+    def convert_premise_to_fol(self, premise_nl_list, premise_nl_pred, dic_predicates, premise_nl_subject):
+        print(premise_nl_pred)
+        # print premise_nl_pred type
+
+        print(premise_nl_pred.dtype())
+
+        prompt_list = []
+
+        for premise_nl in premise_nl_list:
+            premise_nl_pred  = premise_nl_pred[premise_nl]
+            logic_program = [ dic_predicates[predicate] for predicate in premise_nl_pred ]
+            subject = premise_nl_subject[premise_nl]
+            logic_program = self.construct_logic_program(logic_program)
+
+            prompt = self.premise_to_fol_prompt(logic_program, premise_nl, subject)
+            prompt_list.append(prompt)
+        
+        response = self.pipeline(prompt_list, batch_size=len(prompt_list))
+
+        # # Get the response
+        # response = self.get_response(prompt)
+        
         return response
+
+
     

@@ -8,7 +8,8 @@ from transformers import (
 import yaml
 from sentence_transformers import SentenceTransformer, util
 
-def load_pipeline(model_path): 
+def load_pipeline(model_path):
+
 
     MODEL_NAME = "/data/npl/ViInfographicCaps/Contest/demo_contest/xai/Mistral-7B-Instruct-v0.2"
 
@@ -48,3 +49,41 @@ def load_yml(path):
     return None
 
 
+import subprocess
+import os
+import time
+
+def start_corenlp_server(port=9000):
+    # Đảm bảo đang ở đúng thư mục chứa .jar
+    os.chdir("/data/npl/ViInfographicCaps/Contest/final_contest/another_way/stanford-corenlp-4.5.6")
+
+    # Nếu đã có server chạy thì không chạy lại
+    if not os.path.exists("corenlp.pid"):
+        # Tạo lệnh java
+        cmd = [
+            "java", "-mx4g", "-cp", "*",
+            "edu.stanford.nlp.pipeline.StanfordCoreNLPServer",
+            "-port", str(port),
+            "-timeout", "15000"
+        ]
+
+        # Mở server ở chế độ nền
+        with open("corenlp.log", "w") as log_file:
+            process = subprocess.Popen(cmd, stdout=log_file, stderr=log_file)
+            with open("corenlp.pid", "w") as f:
+                f.write(str(process.pid))
+
+        print(f"✅ CoreNLP Server started on port {port}")
+        time.sleep(5)  # Chờ server khởi động
+    else:
+        print("⚠️ Server is already running or pid file exists.")
+
+def stop_corenlp_server():
+    if os.path.exists("corenlp.pid"):
+        with open("corenlp.pid", "r") as f:
+            pid = int(f.read())
+        os.kill(pid, 9)
+        os.remove("corenlp.pid")
+        print("🛑 CoreNLP Server stopped.")
+    else:
+        print("⚠️ No running server found.")

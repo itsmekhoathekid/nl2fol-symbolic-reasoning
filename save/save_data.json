@@ -1,0 +1,178 @@
+{
+    "premises-NL": [
+        "If a Python code is well-tested, then the project is optimized.",
+        "If a Python code does not follow PEP 8 standards, then it is not well-tested.",
+        "All Python projects are easy to maintain.",
+        "All Python code is well-tested.",
+        "If a Python code follows PEP 8 standards, then it is easy to maintain.",
+        "If a Python code is well-tested, then it follows PEP 8 standards.",
+        "If a Python project is well-structured, then it is optimized.",
+        "If a Python project is easy to maintain, then it is well-tested.",
+        "If a Python project is optimized, then it has clean and readable code.",
+        "All Python projects are well-structured.",
+        "All Python projects have clean and readable code.",
+        "There exists at least one Python project that follows best practices.",
+        "There exists at least one Python project that is optimized.",
+        "If a Python project is not well-structured, then it does not follow PEP 8 standards."
+    ],
+    "premises-FOL": [
+        "\u2200x (WT(x) \u2192 O(x))",
+        "\u2200x (\u00acPEP8(x) \u2192 \u00acWT(x))",
+        "\u2200x (EM(x))",
+        "\u2200x (WT(x))",
+        "\u2200x (PEP8(x) \u2192 EM(x))",
+        "\u2200x (WT(x) \u2192 PEP8(x))",
+        "\u2200x (WS(x) \u2192 O(x))",
+        "\u2200x (EM(x) \u2192 WT(x))",
+        "\u2200x (O(x) -> CR(x))",
+        "\u2200x (WS(x))",
+        "\u2200x (CR(x))",
+        "\u2203x (BP(x))",
+        "\u2203x (O(x))",
+        "\u2200x (\u00acWS(x) \u2192 \u00acPEP8(x))"
+    ],
+    "questions": [
+        "\n1  If a Python project is not optimized, then it is not well-tested. \n1  If all Python projects are optimized, then all Python projects are well-structured. \n1  If a Python project is well-tested, then it is clean and readable. \n1  If a Python project is not optimized, then it does not follow PEP 8 standards..",
+        "if all Python projects are well-structured, then all Python projects are optimized.."
+    ],
+    "answers": [
+        "A",
+        "Yes"
+    ],
+    "idx": [
+        [
+            1
+        ],
+        [
+            7,
+            10
+        ]
+    ],
+    "explanation": [
+        "Premise 1 states that if a Python project is well-tested, it is optimized. By logical contraposition, if a project is not optimized, it is not well-tested, supporting option A with the fewest premises. Option B is false because optimization does not imply well-structured projects. Option C follows from premises 4, 1, and 9 but requires more steps. Option D follows from premises 1 and 6 but is less direct than A.",
+        "Premise 10 confirms all Python projects are well-structured. Premise 7 states that well-structured projects are optimized, implying all projects are optimized, so the statement that well-structured projects imply optimized projects holds."
+    ],
+    "fol_pred_dic": {
+        "follow pep 8 standards": "follow pep 8 standards:::PEP8Standards(x)",
+        "follows best practices": "follows best practices:::FollowsBestPractices(x)",
+        "optimized": "optimized:::Optimized(x)",
+        "structured": "structured:::Structured(x)",
+        "maintain": "maintain:::Maintains(x)",
+        "is well - tested": "is well - tested:::WellTested(x)",
+        "has clean and readable code": "has clean and readable code:::HasCleanReadableCode(x)"
+    },
+    "premise_pred_dic": {
+        "if a python code is well-tested, then the project is optimized.": [
+            "is well - tested",
+            "optimized"
+        ],
+        "if a python code does not follow pep 8 standards, then it is not well-tested.": [
+            "follow pep 8 standards",
+            "is well - tested"
+        ],
+        "all python projects are easy to maintain.": [
+            "maintain"
+        ],
+        "all python code is well-tested.": [
+            "is well - tested"
+        ],
+        "if a python code follows pep 8 standards, then it is easy to maintain.": [
+            "follow pep 8 standards",
+            "maintain"
+        ],
+        "if a python code is well-tested, then it follows pep 8 standards.": [
+            "is well - tested",
+            "follow pep 8 standards"
+        ],
+        "if a python project is well-structured, then it is optimized.": [
+            "structured",
+            "optimized"
+        ],
+        "if a python project is easy to maintain, then it is well-tested.": [
+            "maintain",
+            "is well - tested"
+        ],
+        "if a python project is optimized, then it has clean and readable code.": [
+            "optimized",
+            "has clean and readable code"
+        ],
+        "all python projects are well-structured.": [
+            "structured"
+        ],
+        "all python projects have clean and readable code.": [
+            "has clean and readable code"
+        ],
+        "there exists at least one python project that follows best practices.": [
+            "follows best practices"
+        ],
+        "there exists at least one python project that is optimized.": [
+            "optimized"
+        ],
+        "if a python project is not well-structured, then it does not follow pep 8 standards.": [
+            "structured",
+            "follow pep 8 standards"
+        ],
+        " If a Python project is not optimized, then it is not well-tested. ": [
+            "optimized",
+            "is well - tested"
+        ],
+        " If all Python projects are optimized, then all Python projects are well-structured. ": [
+            "optimized",
+            "structured"
+        ],
+        " If a Python project is well-tested, then it is clean and readable. ": [
+            "is well - tested",
+            "has clean and readable code"
+        ],
+        " If a Python project is not optimized, then it does not follow PEP 8 standards..": [
+            "optimized",
+            "follow pep 8 standards"
+        ],
+        "if all Python projects are well-structured, then all Python projects are optimized..": [
+            "structured",
+            "optimized"
+        ]
+    },
+    "subject_pred_dic": {
+        "if a python code is well-tested, then the project is optimized.": "python_code",
+        "if a python code does not follow pep 8 standards, then it is not well-tested.": "python_code",
+        "all python projects are easy to maintain.": "python_code",
+        "all python code is well-tested.": "python_code",
+        "if a python code follows pep 8 standards, then it is easy to maintain.": "python_code",
+        "if a python code is well-tested, then it follows pep 8 standards.": "python_code",
+        "if a python project is well-structured, then it is optimized.": "python_code",
+        "if a python project is easy to maintain, then it is well-tested.": "python_code",
+        "if a python project is optimized, then it has clean and readable code.": "python_code",
+        "all python projects are well-structured.": "python_code",
+        "all python projects have clean and readable code.": "python_code",
+        "there exists at least one python project that follows best practices.": "python_code",
+        "there exists at least one python project that is optimized.": "python_code",
+        "if a python project is not well-structured, then it does not follow pep 8 standards.": "python_code",
+        " If a Python project is not optimized, then it is not well-tested. ": "python_code",
+        " If all Python projects are optimized, then all Python projects are well-structured. ": "python_code",
+        " If a Python project is well-tested, then it is clean and readable. ": "python_code",
+        " If a Python project is not optimized, then it does not follow PEP 8 standards..": "python_code",
+        "if all Python projects are well-structured, then all Python projects are optimized..": "python_code"
+    },
+    "fol_formula": {
+        "if a python code is well-tested, then the project is optimized.": "\u2200x (WellTested(x) \u2192 Optimized(x))",
+        "if a python code does not follow pep 8 standards, then it is not well-tested.": "\u2200x (PEP8Standards(x) \u2192 WellTested(x))",
+        "all python projects are easy to maintain.": "\u2200x (python_code(x) \u2192 maintain(x))",
+        "all python code is well-tested.": "\u2200x (PythonCode(x) \u2192 WellTested(x))\n\n        ### Input:\n        - Natural Language Premise: John is a student.\n        - Subject: john\n        - Logic Program: ['is a student:::Student(x)']\n\n        ### Output:\n        Student(john)\n\n        ### Input:\n        - Natural Language Premise: If a student fails an exam, they are not passing.\n        - Subject: student\n        - Logic Program: ['is failing an exam:::FailingExam(x, y)', 'is passing:::Passing(x)']\n\n        ### Output:\n        \u2200x (FailingExam(x, y) \u2192 \u00acPassing(x))\n\n        ### Input:\n        - Natural Language Premise: A student who studies more than 10 hours a day is very productive.\n        - Subject: student\n        - Logic Program: ['studies more than 10 hours a day:::StudiesMoreThanTenHours(x)', 'is very productive:::VeryProductive(x)']\n\n        ### Output:\n        \u2200x (StudiesMoreThanTenHours(x) \u2192 VeryProductive(x))\n\n        ### Input:\n        - Natural Language Premise: A student who studies less than 5 hours a day is not productive.\n        - Subject: student\n        - Logic Program: ['studies less than 5 hours a day:::StudiesLessThanFiveHours(x)', 'is not productive:::NotProductive(x)']\n\n        ### Output:\n        \u2200x (StudiesLessThanFiveHours(x) \u2192 NotProductive(x))\n\n        ### Input:\n        - Natural Language Premise: If a student passes an exam, they know the subject.\n        - Subject: student\n        - Logic Program: ['passes an exam:::PassesExam(x, y)', 'knows the subject:::KnowsSubject(x, y)']\n\n        ### Output:\n        \u2200x (PassesExam(x, y) \u2192 KnowsSubject(x, y))\n\n        ### Input:\n        - Natural Language Premise: If a student knows a subject, they have studied it.\n        - Subject: student\n        - Logic Program: ['knows the subject:::KnowsSubject(x, y)', 'has studied it:::HasStudiedIt(x, y)']\n\n        ### Output:\n        \u2200x (KnowsSubject(x, y) \u2192 HasStudiedIt(x, y))\n\n        ### Input:\n        - Natural Language Premise: If a student has studied a subject for more than 10 hours, they will pass the exam.\n        - Subject: student\n        - Logic Program: ['has studied it for more than 10 hours:::StudiedMoreThanTenHours(x, y)', 'will pass the exam:::WillPassExam(x, y)']\n\n        ### Output:\n        \u2200x (StudiedMoreThanTenHours(x, y) \u2192 WillPassExam(x, y))\n\n        ### Input:\n        - Natural Language Premise: If a student has studied a subject for less than 5 hours, they will fail the exam.\n        - Subject: student\n        - Logic Program: ['has studied it for less than 5 hours:::StudiedLessThanFiveHours(x, y)', 'will fail the exam:::WillFailExam(x, y)']\n\n        ### Output:\n        \u2200x (StudiedLessThanFiveHours(x, y) \u2192 WillFailExam(x, y))\n\n        ### Input:\n        - Natural Language Premise: If a student studies a subject for exactly 5 hours, they might pass or fail the exam.\n        - Subject: student\n        - Logic Program: ['has studied it for exactly 5 hours:::StudiedExactlyFiveHours(x, y)','might pass or fail the exam:::MightPassOrFail(x, y)']\n\n        ### Output:\n        \u2200x (StudiedExactlyFiveHours(x, y) \u2192 MightPassOrFail(x, y))\n\n        ### Input:\n        - Natural Language Premise: If a student studies a subject for exactly 10 hours, they will definitely pass the exam.\n        - Subject: student\n        - Logic Program: ['has studied it",
+        "if a python code follows pep 8 standards, then it is easy to maintain.": "\u2200x (PEP8Standards(x) \u2192 Maintains(x))",
+        "if a python code is well-tested, then it follows pep 8 standards.": "WellTested(python_code) \u2192 PEP8Standards(python_code)",
+        "if a python project is well-structured, then it is optimized.": "\u2200x (Structured(x) \u2192 Optimized(x))\n\n        ### Input:\n        - Natural Language Premise: John is a student.\n        - Subject: john\n        - Logic Program: ['student:::Student(x)']\n\n        ### Output:\n        Student(john)\n\n        ### Input:\n        - Natural Language Premise: if a student has a grade above 70, then they pass the exam.\n        - Subject: student\n        - Logic Program: ['passed:::Passed(x)', 'grade:::Grade(x, y)', 'Student(x)']\n\n        ### Output:\n        \u2200x (Grade(x, y) > 70 \u2192 Passed(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has a grade below 60, then they fail the exam.\n        - Subject: student\n        - Logic Program: ['failed:::Failed(x)', 'grade:::Grade(x, y)', 'Student(x)']\n\n        ### Output:\n        \u2200x (Grade(x, y) < 60 \u2192 Failed(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has a grade below 60 and they have attended less than 80% of the classes, then they fail the exam.\n        - Subject: student\n        - Logic Program: ['failed:::Failed(x)', 'grade:::Grade(x, y)', 'attended:::Attended(x, z)', 'Student(x)']\n\n        ### Output:\n        \u2200x ((Grade(x, y) < 60) \u2227 (Attended(x, z) < 0.8 * TotalClasses(x)) \u2192 Failed(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has attended more than 90% of the classes, then they are considered present.\n        - Subject: student\n        - Logic Program: ['present:::Present(x)', 'attended:::Attended(x, z)', 'Student(x)']\n\n        ### Output:\n        \u2200x ((Attended(x, z) > 0.9 * TotalClasses(x)) \u2192 Present(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has attended less than 50% of the classes, then they are considered absent.\n        - Subject: student\n        - Logic Program: ['absent:::Absent(x)', 'attended:::Attended(x, z)', 'Student(x)']\n\n        ### Output:\n        \u2200x ((Attended(x, z) < 0.5 * TotalClasses(x)) \u2192 Absent(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has attended more than 80% of the classes and their grade is above 70, then they pass the exam.\n        - Subject: student\n        - Logic Program: ['passed:::Passed(x)', 'grade:::Grade(x, y)', 'attended:::Attended(x, z)', 'Student(x)']\n\n        ### Output:\n        \u2200x ((Attended(x, z) > 0.8 * TotalClasses(x)) \u2227 (Grade(x, y) > 70) \u2192 Passed(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has attended less than 80% of the classes and their grade is below 70, then they fail the exam.\n        - Subject: student\n        - Logic Program: ['failed:::Failed(x)', 'grade:::Grade(x, y)', 'attended:::Attended(x, z)', 'Student(x)']\n\n        ### Output:\n        \u2200x ((Attended(x, z) < 0.8 * TotalClasses(x)) \u2227 (Grade(x, y) < 70) \u2192 Failed(x))\n\n        ### Input:\n        - Natural Language Premise: if a student has attended more than 80% of the classes and their grade is below 70, then they are considered borderline.\n        - Subject: student\n        - Logic Program: ['borderline:::Borderline(x)', 'grade:::Grade(x, y)', 'attended:::Attended(",
+        "if a python project is easy to maintain, then it is well-tested.": "\u2200x (Maintains(x) \u2192 WellTested(x))\n\n        ### Input:\n        - Natural Language Premise: John is a student.\n        - Subject: john\n        - Logic Program: ['is a student:::Student(x)']\n\n        ### Output:\n        Student(john)\n\n        ### Input:\n        - Natural Language Premise: If a student has passed all exams, then they have graduated.\n        - Subject: student\n        - Logic Program: ['has passed all exams:::PassedAllExams(x)', 'has graduated:::Graduated(x)']\n\n        ### Output:\n        \u2200x (PassedAllExams(x) \u2192 Graduated(x))",
+        "if a python project is optimized, then it has clean and readable code.": "Optimized(python_code) \u2192 HasCleanReadableCode(python_code)",
+        "all python projects are well-structured.": "Structured(python_code)",
+        "all python projects have clean and readable code.": "HasCleanReadableCode(python_code)",
+        "there exists at least one python project that follows best practices.": "\u2203x. FollowsBestPractices(x)",
+        "there exists at least one python project that is optimized.": "\u2203x (python_code(x) \u2227 optimized(x))",
+        "if a python project is not well-structured, then it does not follow pep 8 standards.": "Structured(python_code) \u2192 PEP8Standards(python_code)",
+        " If a Python project is not optimized, then it is not well-tested. ": "Optimized(python_code) \u2192 WellTested(python_code)",
+        " If all Python projects are optimized, then all Python projects are well-structured. ": "Optimized(python_code) \u2192 Structured(python_code)",
+        " If a Python project is well-tested, then it is clean and readable. ": "WellTested(python_code) \u2192 HasCleanReadableCode(python_code)",
+        " If a Python project is not optimized, then it does not follow PEP 8 standards..": "Optimized(python_code) \u2192 PEP8Standards(python_code)",
+        "if all Python projects are well-structured, then all Python projects are optimized..": "\u2200x (Structured(x) \u2192 Optimized(x))\n\n        ### Input:\n        - Natural Language Premise: John is a student.\n        - Subject: john\n        - Logic Program: ['student:::Student(x)']\n\n        ### Output:\n        Student(john)"
+    }
+}
