@@ -1,0 +1,6 @@
+model_path : /data/npl/ViInfographicCaps/Contest/demo_contest/xai/Mistral-7B-Instruct-v0.2
+model_embedding: /data/npl/ViInfographicCaps/Contest/final_contest/final_code/model_hf/all-MiniLM-L6-v2
+data:
+  train: /data/npl/ViInfographicCaps/Contest/final_contest/another_way/save/train_v1.json
+  val: /data/npl/ViInfographicCaps/Contest/final_contest/another_way/save/train_v1.json
+  test: /data/npl/ViInfographicCaps/Contest/final_contest/another_way/save/train_v1.json
