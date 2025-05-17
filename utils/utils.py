@@ -10,7 +10,6 @@ from sentence_transformers import SentenceTransformer, util
 
 def load_pipeline(model_path):
 
-
     MODEL_NAME = "/data/npl/ViInfographicCaps/Contest/demo_contest/xai/Mistral-7B-Instruct-v0.2"
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_auth_token=True)
@@ -21,6 +20,8 @@ def load_pipeline(model_path):
         use_auth_token=True,
     )
 
+    tokenizer.pad_token = tokenizer.eos_token
+    
     gen_cfg = GenerationConfig(
         task               = "text-generation",
         max_new_tokens     = 1024,
@@ -55,7 +56,7 @@ import time
 
 def start_corenlp_server(port=9000):
     # Đảm bảo đang ở đúng thư mục chứa .jar
-    os.chdir("/data/npl/ViInfographicCaps/Contest/final_contest/another_way/stanford-corenlp-4.5.6")
+    os.chdir("/data/npl/ViInfographicCaps/Contest/final_contest/final_code/data/stanford-corenlp-4.5.6")
 
     # Nếu đã có server chạy thì không chạy lại
     if not os.path.exists("corenlp.pid"):

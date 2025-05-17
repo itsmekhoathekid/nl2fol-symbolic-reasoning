@@ -155,28 +155,34 @@ class nl_to_fol(chatAgent):
     #     return response
 
     def convert_premise_to_fol(self, premise_nl_list, premise_nl_pred, dic_predicates, premise_nl_subject):
-        print(premise_nl_pred)
+        # print(premise_nl_pred)
         # print premise_nl_pred type
-
-        print(premise_nl_pred.dtype())
+        # print("DEBUG type premise_nl_pred:", type(premise_nl_pred))
+        # print("DEBUG example keys:", premise_nl_pred[:5] if isinstance(premise_nl_pred, list) else list(premise_nl_pred.keys()))
+       
 
         prompt_list = []
 
         for premise_nl in premise_nl_list:
-            premise_nl_pred  = premise_nl_pred[premise_nl]
-            logic_program = [ dic_predicates[predicate] for predicate in premise_nl_pred ]
+            premise_pred  = premise_nl_pred[premise_nl]
+            logic_program = [ dic_predicates[predicate] for predicate in premise_pred ]
             subject = premise_nl_subject[premise_nl]
             logic_program = self.construct_logic_program(logic_program)
 
             prompt = self.premise_to_fol_prompt(logic_program, premise_nl, subject)
             prompt_list.append(prompt)
         
-        response = self.pipeline(prompt_list, batch_size=len(prompt_list))
+        responses = self.pipeline(prompt_list, batch_size = 8 )
+
+        res = {}
+        for idx, response in enumerate(responses):
+            res[premise_nl_list[idx]] = response[0]["generated_text"].split('[OUTPUT]')[-1].strip()
+            # responses[idx] = response[0]["generated_text"].split('[OUTPUT]')[-1].strip()
 
         # # Get the response
         # response = self.get_response(prompt)
         
-        return response
+        return res
 
 
     
