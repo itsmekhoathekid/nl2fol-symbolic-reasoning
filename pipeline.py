@@ -2,6 +2,8 @@
 from utils import load_pipeline, load_yml, extract_predicate_prompt, MAKE_CONCLUSION_FROM_OPTION_QUESTION, start_corenlp_server
 from modules import make_conclusion
 from modules import predicate_nl_extractor, Extract_Hypothesis, nl_to_fol
+from solver import Prover9_K, FOL_Prover9_Program
+
 
 import re
 import argparse
@@ -62,6 +64,8 @@ if __name__ == "__main__":
         pipeline
     )
 
+    prover9 = Prover9_K(solver = FOL_Prover9_Program)
+
     for record in train:
 
         new_questions = []
@@ -72,10 +76,10 @@ if __name__ == "__main__":
                     question=question,
                     config=config
                 )
-                new_questions.append(new_question + '.')
+                new_questions.append(new_question)
             else: # Cho các câu hỏi loại khác
                 new_question = extract_hypothesis_another.generate_hypothesis(question)
-                new_questions.append(new_question + '.')
+                new_questions.append(new_question)
         record['questions'] = new_questions
 
 
@@ -115,7 +119,7 @@ if __name__ == "__main__":
         premise_nl_list = list(premise_pred_dic.keys())
         fol_formula = nl_to_fol_converter.convert_premise_to_fol(premise_nl_list, premise_pred_dic, fol_pred_dic, subject_pred_dic)
 
-        for fol in fol_formula:
+        for premise, fol in fol_formula.items():
             print(fol)
             # fol_formula_dic[premise_nl] = fol_formula
             # print(fol_formula)
@@ -129,10 +133,34 @@ if __name__ == "__main__":
         # Save the record to a file
 
         output_file = '/data/npl/ViInfographicCaps/Contest/final_contest/another_way/save/save_data.json'
-        with open(output_file, 'w') as f:
-            json.dump(record, f, indent=4)
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(record, f, ensure_ascii=False, indent=2)
+
+        premise_fol_list = [ fol_formula[premise] for premise in premise_list]
+        answers_list = []
+
+        for question in record['questions']:
+            if '\n1 ' in question:
+                questions = question.split('\n1 ')
+                questions = [ 'A ' + fol_formula[question] for question in questions]
+                
+                ans_dic = prover9.solving_questions(premise_fol_list , questions)
+                answers_list.append(ans_dic)
+            
+            else:
+                question = [ fol_formula[question] ]
+                ans_dic = prover9.solving_questions(premise_fol_list , question)
+                answers_list.append(ans_dic)
+        
+        record['answers'] = answers_list
+
+
+
+
+        
         end_time = time.time()    # ⏱️ Kết thúc đo thời gian
         print(f"Execution time: {end_time - start_time:.4f} seconds")
+
 
 
 
